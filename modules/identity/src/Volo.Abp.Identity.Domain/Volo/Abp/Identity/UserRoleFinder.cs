@@ -2,20 +2,25 @@
 using System.Threading.Tasks;
 using Volo.Abp.DependencyInjection;
 
-namespace Volo.Abp.Identity
+namespace Volo.Abp.Identity;
+
+public class UserRoleFinder : IUserRoleFinder, ITransientDependency
 {
-    public class UserRoleFinder : IUserRoleFinder, ITransientDependency
+    protected IIdentityUserRepository IdentityUserRepository { get; }
+
+    public UserRoleFinder(IIdentityUserRepository identityUserRepository)
     {
-        private readonly IIdentityUserRepository _identityUserRepository;
+        IdentityUserRepository = identityUserRepository;
+    }
 
-        public UserRoleFinder(IIdentityUserRepository identityUserRepository)
-        {
-            _identityUserRepository = identityUserRepository;
-        }
+    [Obsolete("Use GetRoleNamesAsync instead.")]
+    public virtual async Task<string[]> GetRolesAsync(Guid userId)
+    {
+        return (await IdentityUserRepository.GetRoleNamesAsync(userId)).ToArray();
+    }
 
-        public async Task<string[]> GetRolesAsync(Guid userId)
-        {
-            return (await _identityUserRepository.GetRoleNamesAsync(userId)).ToArray();
-        }
+    public async Task<string[]> GetRoleNamesAsync(Guid userId)
+    {
+        return (await IdentityUserRepository.GetRoleNamesAsync(userId)).ToArray();
     }
 }

@@ -1,7 +1,9 @@
-﻿namespace Volo.Abp.PermissionManagement.MongoDb
-{
-    public class PermissionGrantRepository_Tests : PermissionGrantRepository_Tests<AbpPermissionManagementMongoDbTestModule>
-    {
+﻿using Xunit;
 
-    }
+namespace Volo.Abp.PermissionManagement.MongoDB;
+
+[Collection(MongoTestCollection.Name)]
+public class PermissionGrantRepository_Tests : PermissionGrantRepository_Tests<AbpPermissionManagementMongoDbTestModule>
+{
+
 }

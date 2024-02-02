@@ -4,26 +4,35 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Volo.Abp.DependencyInjection;
 
-namespace Volo.Abp.MultiTenancy.ConfigurationStore
+namespace Volo.Abp.MultiTenancy.ConfigurationStore;
+
+[Dependency(TryRegister = true)]
+public class DefaultTenantStore : ITenantStore, ITransientDependency
 {
-    [Dependency(TryRegister = true)]
-    public class DefaultTenantStore : ITenantStore, ITransientDependency
+    private readonly AbpDefaultTenantStoreOptions _options;
+
+    public DefaultTenantStore(IOptionsMonitor<AbpDefaultTenantStoreOptions> options)
     {
-        private readonly DefaultTenantStoreOptions _options;
+        _options = options.CurrentValue;
+    }
 
-        public DefaultTenantStore(IOptionsSnapshot<DefaultTenantStoreOptions> options)
-        {
-            _options = options.Value;
-        }
+    public Task<TenantConfiguration?> FindAsync(string normalizedName)
+    {
+        return Task.FromResult(Find(normalizedName));
+    }
 
-        public Task<TenantConfiguration> FindAsync(string name)
-        {
-            return Task.FromResult(_options.Tenants?.FirstOrDefault(t => t.Name == name));
-        }
+    public Task<TenantConfiguration?> FindAsync(Guid id)
+    {
+        return Task.FromResult(Find(id));
+    }
 
-        public Task<TenantConfiguration> FindAsync(Guid id)
-        {
-            return Task.FromResult(_options.Tenants?.FirstOrDefault(t => t.Id == id));
-        }
+    public TenantConfiguration? Find(string normalizedName)
+    {
+        return _options.Tenants?.FirstOrDefault(t => t.NormalizedName == normalizedName);
+    }
+
+    public TenantConfiguration? Find(Guid id)
+    {
+        return _options.Tenants?.FirstOrDefault(t => t.Id == id);
     }
 }

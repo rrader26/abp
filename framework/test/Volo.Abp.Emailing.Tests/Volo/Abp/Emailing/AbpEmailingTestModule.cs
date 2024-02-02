@@ -1,29 +1,20 @@
-﻿using Volo.Abp.Emailing.Localization;
-using Volo.Abp.Localization;
+﻿using Volo.Abp.Autofac;
 using Volo.Abp.Modularity;
 using Volo.Abp.VirtualFileSystem;
 
-namespace Volo.Abp.Emailing
+namespace Volo.Abp.Emailing;
+
+[DependsOn(
+    typeof(AbpEmailingModule),
+    typeof(AbpAutofacModule),
+    typeof(AbpTestBaseModule))]
+public class AbpEmailingTestModule : AbpModule
 {
-    [DependsOn(
-        typeof(AbpEmailingModule),
-        typeof(AbpTestBaseModule))]
-    public class AbpEmailingTestModule : AbpModule
+    public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        public override void ConfigureServices(ServiceConfigurationContext context)
+        Configure<AbpVirtualFileSystemOptions>(options =>
         {
-            Configure<VirtualFileSystemOptions>(options =>
-            {
-                options.FileSets.AddEmbedded<AbpEmailingTestModule>();
-            });
-
-            Configure<AbpLocalizationOptions>(options =>
-            {
-                options.Resources
-                    .Add<AbpEmailingTestResource>()
-                    .AddVirtualJson("/Volo/Abp/Emailing/Localization");
-            });
-
-        }
+            options.FileSets.AddEmbedded<AbpEmailingTestModule>();
+        });
     }
 }

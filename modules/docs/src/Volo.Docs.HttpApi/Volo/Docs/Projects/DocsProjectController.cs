@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Asp.Versioning;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.AspNetCore.Mvc;
@@ -7,11 +8,11 @@ using Volo.Docs.Documents;
 
 namespace Volo.Docs.Projects
 {
-    [RemoteService]
-    [Area("docs")]
+    [RemoteService(Name = DocsRemoteServiceConsts.RemoteServiceName)]
+    [Area(DocsRemoteServiceConsts.ModuleName)]
     [ControllerName("Project")]
     [Route("api/docs/projects")]
-    public class DocsProjectController : AbpController, IProjectAppService
+    public class DocsProjectController : AbpControllerBase, IProjectAppService
     {
         protected IProjectAppService ProjectAppService { get; }
 
@@ -36,9 +37,9 @@ namespace Volo.Docs.Projects
 
         [HttpGet]
         [Route("{shortName}/defaultLanguage")]
-        public Task<string> GetDefaultLanguageCode(string shortName,string version)
+        public Task<string> GetDefaultLanguageCodeAsync(string shortName,string version)
         {
-            return ProjectAppService.GetDefaultLanguageCode(shortName, version);
+            return ProjectAppService.GetDefaultLanguageCodeAsync(shortName, version);
         }
 
         [HttpGet]

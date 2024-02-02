@@ -11,23 +11,24 @@ namespace Volo.Blogging.Areas.Blog.Controllers
 
     [Area("Blog")]
     [Route("Blog/[controller]/[action]")]
-    public class CommentsController : AbpController
+    public class CommentsController : BloggingControllerBase
     {
         private readonly ICommentAppService _commentAppService;
 
         public CommentsController(ICommentAppService commentAppService)
         {
             _commentAppService = commentAppService;
+
         }
 
         [HttpPost]
-        public async Task Delete(Guid id)
+        public virtual async Task Delete(Guid id)
         {
             await _commentAppService.DeleteAsync(id);
         }
 
         [HttpPost]
-        public async Task Update(Guid id, UpdateCommentDto commentDto)
+        public virtual async Task Update(Guid id, UpdateCommentDto commentDto)
         {
             await _commentAppService.UpdateAsync(id, commentDto);
         }

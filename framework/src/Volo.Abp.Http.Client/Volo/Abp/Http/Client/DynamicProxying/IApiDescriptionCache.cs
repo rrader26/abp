@@ -1,11 +1,13 @@
-﻿using System.Threading;
+﻿using System;
 using System.Threading.Tasks;
 using Volo.Abp.Http.Modeling;
 
-namespace Volo.Abp.Http.Client.DynamicProxying
+namespace Volo.Abp.Http.Client.DynamicProxying;
+
+public interface IApiDescriptionCache
 {
-    public interface IApiDescriptionCache
-    {
-        Task<ApplicationApiDescriptionModel> GetAsync(string baseUrl, CancellationToken cancellationToken = default);
-    }
+    Task<ApplicationApiDescriptionModel> GetAsync(
+        string baseUrl,
+        Func<Task<ApplicationApiDescriptionModel>> factory
+    );
 }

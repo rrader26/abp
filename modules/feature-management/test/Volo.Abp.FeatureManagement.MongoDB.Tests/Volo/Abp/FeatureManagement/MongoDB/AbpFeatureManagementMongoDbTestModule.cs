@@ -1,30 +1,21 @@
-﻿using Mongo2Go;
+﻿using System;
 using Volo.Abp.Data;
 using Volo.Abp.Modularity;
 
-namespace Volo.Abp.FeatureManagement.MongoDB
+namespace Volo.Abp.FeatureManagement.MongoDB;
+
+[DependsOn(
+    typeof(FeatureManagementTestBaseModule),
+    typeof(AbpFeatureManagementMongoDbModule)
+    )]
+public class AbpFeatureManagementMongoDbTestModule : AbpModule
 {
-    [DependsOn(
-        typeof(FeatureManagementTestBaseModule),
-        typeof(AbpFeatureManagementMongoDbModule)
-        )]
-    public class AbpFeatureManagementMongoDbTestModule : AbpModule
+    public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        private MongoDbRunner _mongoDbRunner;
-
-        public override void ConfigureServices(ServiceConfigurationContext context)
+        Configure<AbpDbConnectionOptions>(options =>
         {
-            _mongoDbRunner = MongoDbRunner.Start();
+            options.ConnectionStrings.Default = MongoDbFixture.GetRandomConnectionString();
+        });
 
-            Configure<DbConnectionOptions>(options =>
-            {
-                options.ConnectionStrings.Default = _mongoDbRunner.ConnectionString;
-            });
-        }
-
-        public override void OnApplicationShutdown(ApplicationShutdownContext context)
-        {
-            _mongoDbRunner.Dispose();
-        }
     }
 }

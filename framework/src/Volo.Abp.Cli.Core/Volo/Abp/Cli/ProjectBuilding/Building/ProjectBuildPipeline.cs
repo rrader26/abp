@@ -1,22 +1,24 @@
 ﻿using System.Collections.Generic;
 
-namespace Volo.Abp.Cli.ProjectBuilding.Building
+namespace Volo.Abp.Cli.ProjectBuilding.Building;
+
+public class ProjectBuildPipeline
 {
-    public class ProjectBuildPipeline
+    public ProjectBuildContext Context { get; }
+
+    public List<ProjectBuildPipelineStep> Steps { get; }
+
+    public ProjectBuildPipeline(ProjectBuildContext context)
     {
-        public List<ProjectBuildPipelineStep> Steps { get; }
+        Context = context;
+        Steps = new List<ProjectBuildPipelineStep>();
+    }
 
-        public ProjectBuildPipeline()
+    public void Execute()
+    {
+        foreach (var step in Steps)
         {
-            Steps = new List<ProjectBuildPipelineStep>();
-        }
-
-        public void Execute(ProjectBuildContext context)
-        {
-            foreach (var step in Steps)
-            {
-                step.Execute(context);
-            }
+            step.Execute(Context);
         }
     }
 }

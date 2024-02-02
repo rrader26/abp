@@ -1,30 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using Volo.Abp.Cli.ProjectBuilding.Templates.App;
+using Volo.Abp.Cli.ProjectBuilding.Templates;
 
-namespace Volo.Abp.Cli.ProjectBuilding.Building
+namespace Volo.Abp.Cli.ProjectBuilding.Building;
+
+public abstract class TemplateInfo
 {
-    public abstract class TemplateInfo
+    [NotNull]
+    public string Name { get; }
+
+    public DatabaseProvider DefaultDatabaseProvider { get; }
+
+    public UiFramework DefaultUiFramework { get; }
+
+    [CanBeNull]
+    public string DocumentUrl { get; set; }
+
+    protected TemplateInfo(
+        [NotNull] string name,
+        DatabaseProvider defaultDatabaseProvider = DatabaseProvider.NotSpecified,
+        UiFramework defaultUiFramework = UiFramework.NotSpecified)
     {
-        [NotNull]
-        public string Name { get; }
+        Name = Check.NotNullOrWhiteSpace(name, nameof(name));
+        DefaultDatabaseProvider = defaultDatabaseProvider;
+        DefaultUiFramework = defaultUiFramework;
+    }
 
-        public DatabaseProvider DefaultDatabaseProvider { get; }
+    public virtual IEnumerable<ProjectBuildPipelineStep> GetCustomSteps(ProjectBuildContext context)
+    {
+        var steps = new List<ProjectBuildPipelineStep>();
+        return steps;
+    }
 
-        [CanBeNull]
-        public string DocumentUrl { get; set; }
+    public bool IsPro()
+    {
+        return Name.EndsWith("-pro", StringComparison.OrdinalIgnoreCase);
+    }
 
-        protected TemplateInfo(
-            [NotNull] string name, 
-            DatabaseProvider defaultDatabaseProvider = DatabaseProvider.NotSpecified)
-        {
-            Name = Check.NotNullOrWhiteSpace(name, nameof(name));
-            DefaultDatabaseProvider = Check.NotNull(defaultDatabaseProvider, nameof(defaultDatabaseProvider));
-        }
-
-        public virtual IEnumerable<ProjectBuildPipelineStep> GetCustomSteps(ProjectBuildContext context)
-        {
-            return Array.Empty<ProjectBuildPipelineStep>();
-        }
+    public bool IsNoLayer()
+    {
+        return Name is AppNoLayersTemplate.TemplateName or AppNoLayersProTemplate.TemplateName;
     }
 }

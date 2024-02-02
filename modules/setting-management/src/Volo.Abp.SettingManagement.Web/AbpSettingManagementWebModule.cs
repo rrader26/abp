@@ -1,42 +1,67 @@
-﻿using Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared;
-using Volo.Abp.Localization;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Volo.Abp.AspNetCore.Mvc.Localization;
+using Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared;
+using Volo.Abp.AutoMapper;
+using Volo.Abp.Http.ProxyScripting.Generators.JQuery;
 using Volo.Abp.Modularity;
 using Volo.Abp.SettingManagement.Localization;
 using Volo.Abp.SettingManagement.Web.Navigation;
+using Volo.Abp.SettingManagement.Web.Pages.SettingManagement;
+using Volo.Abp.SettingManagement.Web.Settings;
 using Volo.Abp.UI.Navigation;
 using Volo.Abp.VirtualFileSystem;
 
-namespace Volo.Abp.SettingManagement.Web
+namespace Volo.Abp.SettingManagement.Web;
+
+[DependsOn(
+    typeof(AbpSettingManagementApplicationContractsModule),
+    typeof(AbpAutoMapperModule),
+    typeof(AbpAspNetCoreMvcUiThemeSharedModule),
+    typeof(AbpSettingManagementDomainSharedModule)
+    )]
+public class AbpSettingManagementWebModule : AbpModule
 {
-    [DependsOn(
-        typeof(AbpAspNetCoreMvcUiThemeSharedModule)
-        )]
-    public class AbpSettingManagementWebModule : AbpModule
+    public override void PreConfigureServices(ServiceConfigurationContext context)
     {
-        public override void ConfigureServices(ServiceConfigurationContext context)
+        context.Services.PreConfigure<AbpMvcDataAnnotationsLocalizationOptions>(options =>
         {
-            Configure<NavigationOptions>(options =>
-            {
-                options.MenuContributors.Add(new SettingManagementMainMenuContributor());
-            });
+            options.AddAssemblyResource(typeof(AbpSettingManagementResource), typeof(AbpSettingManagementWebModule).Assembly);
+        });
 
-            Configure<VirtualFileSystemOptions>(options =>
-            {
-                options.FileSets.AddEmbedded<AbpSettingManagementWebModule>("Volo.Abp.SettingManagement.Web");
-            });
+        PreConfigure<IMvcBuilder>(mvcBuilder =>
+        {
+            mvcBuilder.AddApplicationPartIfNotExists(typeof(AbpSettingManagementWebModule).Assembly);
+        });
+    }
 
-            Configure<AbpLocalizationOptions>(options =>
-            {
-                options.Resources
-                    .Add<AbpSettingManagementResource>("en");
-            });
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
 
-            Configure<AbpLocalizationOptions>(options =>
-            {
-                options.Resources
-                    .Get<AbpSettingManagementResource>()
-                    .AddVirtualJson("/Localization/Resources/AbpSettingManagement");
-            });
-        }
+        Configure<AbpNavigationOptions>(options =>
+        {
+            options.MenuContributors.Add(new SettingManagementMainMenuContributor());
+        });
+
+        Configure<SettingManagementPageOptions>(options =>
+        {
+            options.Contributors.Add(new EmailingPageContributor());
+            options.Contributors.Add(new TimeZonePageContributor());
+        });
+
+        Configure<AbpVirtualFileSystemOptions>(options =>
+        {
+            options.FileSets.AddEmbedded<AbpSettingManagementWebModule>();
+        });
+
+        Configure<DynamicJavaScriptProxyOptions>(options =>
+        {
+            options.DisableModule(SettingManagementRemoteServiceConsts.ModuleName);
+        });
+
+        context.Services.AddAutoMapperObjectMapper<AbpSettingManagementWebModule>();
+        Configure<AbpAutoMapperOptions>(options =>
+        {
+            options.AddProfile<SettingManagementWebAutoMapperProfile>(validate: true);
+        });
     }
 }

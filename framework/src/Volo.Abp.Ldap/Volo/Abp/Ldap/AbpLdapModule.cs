@@ -1,18 +1,12 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Volo.Abp.Autofac;
-using Volo.Abp.Modularity;
+﻿using Volo.Abp.Modularity;
+using Volo.Abp.Settings;
 
-namespace Volo.Abp.Ldap
+namespace Volo.Abp.Ldap;
+
+[DependsOn(
+    typeof(AbpLdapAbstractionsModule),
+    typeof(AbpSettingsModule))]
+public class AbpLdapModule : AbpModule
 {
-    [DependsOn(
-        typeof(AbpAutofacModule)
-    )]
-    public class AbpLdapModule : AbpModule
-    {
-        public override void ConfigureServices(ServiceConfigurationContext context)
-        {
-            var configuration = context.Services.GetConfiguration();
-            Configure<LdapOptions>(configuration.GetSection("LDAP"));
-        }
-    }
+   
 }

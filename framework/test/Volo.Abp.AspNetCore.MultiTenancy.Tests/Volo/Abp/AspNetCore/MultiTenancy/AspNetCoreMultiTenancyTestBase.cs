@@ -1,9 +1,7 @@
-using Volo.Abp.AspNetCore.App;
 
-namespace Volo.Abp.AspNetCore.MultiTenancy
+namespace Volo.Abp.AspNetCore.MultiTenancy;
+
+public abstract class AspNetCoreMultiTenancyTestBase : AbpAspNetCoreTestBase<Program>
 {
-    public abstract class AspNetCoreMultiTenancyTestBase : AbpAspNetCoreTestBase<Startup>
-    {
 
-    }
 }

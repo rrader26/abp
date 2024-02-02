@@ -1,60 +1,57 @@
 ﻿using AutoMapper;
+using Volo.Abp.AutoMapper;
 using Volo.Abp.Identity.Web.Pages.Identity.Roles;
-using Volo.Abp.Identity.Web.Pages.Identity.Shared;
 using CreateUserModalModel = Volo.Abp.Identity.Web.Pages.Identity.Users.CreateModalModel;
 using EditUserModalModel = Volo.Abp.Identity.Web.Pages.Identity.Users.EditModalModel;
 
-namespace Volo.Abp.Identity.Web
+namespace Volo.Abp.Identity.Web;
+
+public class AbpIdentityWebAutoMapperProfile : Profile
 {
-    public class AbpIdentityWebAutoMapperProfile : Profile
+    public AbpIdentityWebAutoMapperProfile()
     {
-        public AbpIdentityWebAutoMapperProfile()
-        {
-            CreateUserMappings();
-            CreateRoleMappings();
-            CreateProfileMappings();
-        }
+        CreateUserMappings();
+        CreateRoleMappings();
+    }
 
-        private void CreateUserMappings()
-        {
-            //List
-            CreateMap<IdentityUserDto, EditUserModalModel.UserInfoViewModel>();
+    protected virtual void CreateUserMappings()
+    {
+        //List
+        CreateMap<IdentityUserDto, EditUserModalModel.UserInfoViewModel>()
+            .Ignore(x => x.Password);
 
-            //CreateModal
-            CreateMap<CreateUserModalModel.UserInfoViewModel, IdentityUserCreateDto>()
-                .ForMember(dest => dest.RoleNames, opt => opt.Ignore());
+        //CreateModal
+        CreateMap<CreateUserModalModel.UserInfoViewModel, IdentityUserCreateDto>()
+            .MapExtraProperties()
+            .ForMember(dest => dest.RoleNames, opt => opt.Ignore());
 
-            CreateMap<IdentityRoleDto, CreateUserModalModel.AssignedRoleViewModel>()
-                .ForMember(dest => dest.IsAssigned, opt => opt.Ignore());
+        CreateMap<IdentityRoleDto, CreateUserModalModel.AssignedRoleViewModel>()
+            .ForMember(dest => dest.IsAssigned, opt => opt.Ignore());
 
-            //EditModal
-            CreateMap<EditUserModalModel.UserInfoViewModel, IdentityUserUpdateDto>()
-                .ForMember(dest => dest.RoleNames, opt => opt.Ignore());
+        //EditModal
+        CreateMap<EditUserModalModel.UserInfoViewModel, IdentityUserUpdateDto>()
+            .MapExtraProperties()
+            .ForMember(dest => dest.RoleNames, opt => opt.Ignore());
 
-            CreateMap<IdentityRoleDto, EditUserModalModel.AssignedRoleViewModel>()
-                .ForMember(dest => dest.IsAssigned, opt => opt.Ignore());
+        CreateMap<IdentityRoleDto, EditUserModalModel.AssignedRoleViewModel>()
+            .ForMember(dest => dest.IsAssigned, opt => opt.Ignore());
 
-            CreateMap<ProfileDto, PersonalSettingsInfoModel>();
+        CreateMap<IdentityUserDto, EditUserModalModel.DetailViewModel>()
+            .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
+            .ForMember(dest => dest.ModifiedBy, opt => opt.Ignore());
+    }
 
-            CreateMap<PersonalSettingsInfoModel, UpdateProfileDto>();
-        }
+    protected virtual void CreateRoleMappings()
+    {
+        //List
+        CreateMap<IdentityRoleDto, EditModalModel.RoleInfoModel>();
 
-        private void CreateRoleMappings()
-        {
-            //List
-            CreateMap<IdentityRoleDto, EditModalModel.RoleInfoModel>();
+        //CreateModal
+        CreateMap<CreateModalModel.RoleInfoModel, IdentityRoleCreateDto>()
+            .MapExtraProperties();
 
-            //CreateModal
-            CreateMap<CreateModalModel.RoleInfoModel, IdentityRoleCreateDto>();
-
-            //EditModal
-            CreateMap<EditModalModel.RoleInfoModel, IdentityRoleUpdateDto>();
-        }
-
-        private void CreateProfileMappings()
-        {
-            CreateMap<ProfileDto, PersonalSettingsInfoModel>();
-            CreateMap<PersonalSettingsInfoModel, UpdateProfileDto>();
-        }
+        //EditModal
+        CreateMap<EditModalModel.RoleInfoModel, IdentityRoleUpdateDto>()
+            .MapExtraProperties();
     }
 }

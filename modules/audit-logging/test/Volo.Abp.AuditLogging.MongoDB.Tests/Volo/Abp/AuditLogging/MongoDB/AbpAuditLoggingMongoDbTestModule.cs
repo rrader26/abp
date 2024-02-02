@@ -1,31 +1,21 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Mongo2Go;
+﻿using System;
 using Volo.Abp.Data;
 using Volo.Abp.Modularity;
+using Volo.Abp.Uow;
 
-namespace Volo.Abp.AuditLogging.MongoDB
+namespace Volo.Abp.AuditLogging.MongoDB;
+
+[DependsOn(
+    typeof(AbpAuditLoggingTestBaseModule),
+    typeof(AbpAuditLoggingMongoDbModule)
+)]
+public class AbpAuditLoggingMongoDbTestModule : AbpModule
 {
-    [DependsOn(
-        typeof(AbpAuditLoggingTestBaseModule),
-        typeof(AbpAuditLoggingMongoDbModule)
-    )]
-    public class AbpAuditLoggingMongoDbTestModule : AbpModule
+    public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        private MongoDbRunner _mongoDbRunner;
-
-        public override void ConfigureServices(ServiceConfigurationContext context)
+        Configure<AbpDbConnectionOptions>(options =>
         {
-            _mongoDbRunner = MongoDbRunner.Start();
-
-            Configure<DbConnectionOptions>(options =>
-            {
-                options.ConnectionStrings.Default = _mongoDbRunner.ConnectionString;
-            });
-        }
-
-        public override void OnApplicationShutdown(ApplicationShutdownContext context)
-        {
-            _mongoDbRunner.Dispose();
-        }
+            options.ConnectionStrings.Default = MongoDbFixture.GetRandomConnectionString();
+        });
     }
 }

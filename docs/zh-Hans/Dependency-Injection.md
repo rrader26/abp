@@ -270,16 +270,16 @@ using (var scope = _serviceProvider.CreateScope())
 
 ## 高级特性
 
-### IServiceCollection.OnRegistred 事件
+### IServiceCollection.OnRegistered 事件
 
-你可能想在注册到依赖注入的每个服务上执行一个操作, 在你的模块的 `PreConfigureServices` 方法中, 使用 `OnRegistred` 方法注册一个回调(callback) , 如下所示:
+你可能想在注册到依赖注入的每个服务上执行一个操作, 在你的模块的 `PreConfigureServices` 方法中, 使用 `OnRegistered` 方法注册一个回调(callback) , 如下所示:
 
 ````csharp
 public class AppModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)
     {
-        context.Services.OnRegistred(ctx =>
+        context.Services.OnRegistered(ctx =>
         {
             var type = ctx.ImplementationType;
             //...
@@ -295,7 +295,7 @@ public class AppModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)
     {
-        context.Services.OnRegistred(ctx =>
+        context.Services.OnRegistered(ctx =>
         {
             if (ctx.ImplementationType.IsDefined(typeof(MyLogAttribute), true))
             {
@@ -308,7 +308,25 @@ public class AppModule : AbpModule
 
 这个示例判断一个服务类是否具有 `MyLogAttribute` 特性, 如果有的话就添加一个 `MyLogInterceptor` 到拦截器集合中.
 
-> 注意, 如果服务类公开了多于一个服务或接口, `OnRegistred` 回调(callback)可能被同一服务类多次调用. 因此, 较安全的方法是使用 `Interceptors.TryAdd` 方法而不是 `Interceptors.Add` 方法. 请参阅动态代理(dynamic proxying)/拦截器 [文档](Dynamic-Proxying-Interceptors.md).
+> 注意, 如果服务类公开了多于一个服务或接口, `OnRegistered` 回调(callback)可能被同一服务类多次调用. 因此, 较安全的方法是使用 `Interceptors.TryAdd` 方法而不是 `Interceptors.Add` 方法. 请参阅动态代理(dynamic proxying)/拦截器 [文档](Dynamic-Proxying-Interceptors.md).
+
+### IServiceCollection.OnActivated 事件
+
+一旦服务完全构建完成`OnActivated`事件就会触发. 你可以执行依赖于服务已完全构建的的一些任务, 虽然这种情况可能很少见.
+
+````csharp
+var serviceDescriptor = ServiceDescriptor.Transient<MyServer, MyServer>();
+services.Add(serviceDescriptor);
+if (setIsReadOnly)
+{
+    services.OnActivated(serviceDescriptor, x =>
+    {
+        x.Instance.As<MyServer>().IsReadOnly = true;
+    });
+}
+````
+
+> 注意，`OnActivated`事件可以为一个`ServiceDescriptor`注册多次.
 
 ## 第三方提供程序
 
@@ -319,4 +337,4 @@ public class AppModule : AbpModule
 
 ### 请参阅
 
-* [ASP.NET Core依赖注入最佳实践,提示和技巧](https://cn.abp.io/blog/Abp/asp-net-core-dependency-injection-best-practices-tips-tricks)
+* [ASP.NET Core依赖注入最佳实践,提示和技巧](https://blog.abp.io/asp-net-core-dependency-injection-best-practices-tips-tricks)

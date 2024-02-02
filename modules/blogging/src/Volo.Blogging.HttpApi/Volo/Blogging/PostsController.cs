@@ -1,18 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.AspNetCore.Mvc;
-using Volo.Abp.Auditing;
 using Volo.Blogging.Posts;
 
 namespace Volo.Blogging
 {
-    [RemoteService]
-    [Area("blogging")]
+    [RemoteService(Name = BloggingRemoteServiceConsts.RemoteServiceName)]
+    [Area(BloggingRemoteServiceConsts.ModuleName)]
     [Route("api/blogging/posts")]
-    public class PostsController : AbpController, IPostAppService
+    public class PostsController : AbpControllerBase, IPostAppService
     {
         private readonly IPostAppService _postAppService;
 
@@ -23,9 +23,16 @@ namespace Volo.Blogging
 
         [HttpGet]
         [Route("{blogId}/all")]
-        public Task<ListResultDto<PostWithDetailsDto>> GetListByBlogIdAndTagName(Guid blogId, string tagName)
+        public Task<ListResultDto<PostWithDetailsDto>> GetListByBlogIdAndTagNameAsync(Guid blogId, string tagName)
         {
-            return _postAppService.GetListByBlogIdAndTagName(blogId, tagName);
+            return _postAppService.GetListByBlogIdAndTagNameAsync(blogId, tagName);
+        }
+
+        [HttpGet]
+        [Route("{blogId}/all/by-time")]
+        public Task<ListResultDto<PostWithDetailsDto>> GetTimeOrderedListAsync(Guid blogId)
+        {
+            return _postAppService.GetTimeOrderedListAsync(blogId);
         }
 
         [HttpGet]
@@ -54,6 +61,20 @@ namespace Volo.Blogging
         {
             return _postAppService.UpdateAsync(id, input);
         }
+        
+        [HttpGet]
+        [Route("user/{userId}")]
+        public Task<List<PostWithDetailsDto>> GetListByUserIdAsync(Guid userId)
+        {
+            return _postAppService.GetListByUserIdAsync(userId);
+        }
+
+        [HttpGet]
+        [Route("{blogId}/latest/{count}")]
+        public Task<List<PostWithDetailsDto>> GetLatestBlogPostsAsync(Guid blogId, int count)
+        {
+            return _postAppService.GetLatestBlogPostsAsync(blogId, count);
+        }
 
         [HttpDelete]
         [Route("{id}")]
@@ -61,5 +82,6 @@ namespace Volo.Blogging
         {
             return _postAppService.DeleteAsync(id);
         }
+
     }
 }

@@ -1,8 +1,9 @@
-FROM mcr.microsoft.com/dotnet/core/aspnet:2.2-alpine AS base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 80
+ENV ASPNETCORE_URLS=http://+:80
 
-FROM mcr.microsoft.com/dotnet/core/sdk:2.2-alpine AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY . .
 WORKDIR "/src/modules/docs/app/VoloDocs.Web"

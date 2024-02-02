@@ -1,11 +1,10 @@
-﻿# Startup Templates
+# Startup Templates
 
-While you can start with an empty project and add needed packages manually, startup templates makes easy and comfortable to start a new solution with the ABP framework.
+While you can start with an empty project and add needed packages manually, startup templates make easy and comfortable to start a new solution with the ABP framework. Click the name from the list below to see the documentation of the related startup template:
 
-Click to the name from the list below to see the documentation of the related startup template:
-
-* [**mvc**](Mvc.md): ASP.NET Core MVC application template.
-* [**mvc-module**](Mvc-Module.md): ASP.NET Core MVC module/service template.
-
-
-
+* [**`app`**](Application.md): Application template.
+* [**`app-nolayers`**](Application-Single-Layer.md): Application (single layer) template.
+* [**`module`**](Module.md): Module/service template.
+* [**`console`**](Console.md): Console template.
+* [**`WPF`**](WPF.md): WPF template.
+* [**`MAUI`**](MAUI.md): MAUI template.

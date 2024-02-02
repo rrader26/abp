@@ -1,6 +1,6 @@
-﻿namespace Volo.Abp.DependencyInjection
+﻿namespace Volo.Abp.DependencyInjection;
+
+public interface ISingletonDependency
 {
-    public interface ISingletonDependency
-    {
-    }
+
 }

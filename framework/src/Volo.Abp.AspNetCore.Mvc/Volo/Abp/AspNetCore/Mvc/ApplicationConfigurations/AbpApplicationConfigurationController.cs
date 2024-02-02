@@ -1,23 +1,30 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Volo.Abp.AspNetCore.Mvc.AntiForgery;
 
-namespace Volo.Abp.AspNetCore.Mvc.ApplicationConfigurations
+namespace Volo.Abp.AspNetCore.Mvc.ApplicationConfigurations;
+
+[Area("abp")]
+[RemoteService(Name = "abp")]
+[Route("api/abp/application-configuration")]
+public class AbpApplicationConfigurationController : AbpControllerBase, IAbpApplicationConfigurationAppService
 {
-    [Route("api/abp/application-configuration")]
-    public class AbpApplicationConfigurationController : AbpController, IAbpApplicationConfigurationAppService
+    protected readonly IAbpApplicationConfigurationAppService ApplicationConfigurationAppService;
+    protected readonly IAbpAntiForgeryManager AntiForgeryManager;
+
+    public AbpApplicationConfigurationController(
+        IAbpApplicationConfigurationAppService applicationConfigurationAppService,
+        IAbpAntiForgeryManager antiForgeryManager)
     {
-        private readonly IAbpApplicationConfigurationAppService _applicationConfigurationAppService;
+        ApplicationConfigurationAppService = applicationConfigurationAppService;
+        AntiForgeryManager = antiForgeryManager;
+    }
 
-        public AbpApplicationConfigurationController(
-            IAbpApplicationConfigurationAppService applicationConfigurationAppService)
-        {
-            _applicationConfigurationAppService = applicationConfigurationAppService;
-        }
-
-        [HttpGet]
-        public Task<ApplicationConfigurationDto> GetAsync()
-        {
-            return _applicationConfigurationAppService.GetAsync();
-        }
+    [HttpGet]
+    public virtual async Task<ApplicationConfigurationDto> GetAsync(
+        ApplicationConfigurationRequestOptions options)
+    {
+        AntiForgeryManager.SetCookie();
+        return await ApplicationConfigurationAppService.GetAsync(options);
     }
 }

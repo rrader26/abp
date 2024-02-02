@@ -2,42 +2,41 @@
 using System.Security.Claims;
 using JetBrains.Annotations;
 
-namespace Volo.Abp.Users
+namespace Volo.Abp.Users;
+
+public interface ICurrentUser
 {
-    public interface ICurrentUser
-    {
-        bool IsAuthenticated { get; }
+    bool IsAuthenticated { get; }
 
-        [CanBeNull]
-        Guid? Id { get; }
+    [CanBeNull]
+    Guid? Id { get; }
 
-        [CanBeNull]
-        string UserName { get; }
+    string? UserName { get; }
 
-        [CanBeNull]
-        string PhoneNumber { get; }
-        
-        bool PhoneNumberVerified { get; }
+    string? Name { get; }
 
-        [CanBeNull]
-        string Email { get; }
+    string? SurName { get; }
 
-        bool EmailVerified { get; }
+    string? PhoneNumber { get; }
 
-        Guid? TenantId { get; }
+    bool PhoneNumberVerified { get; }
 
-        [NotNull]
-        string[] Roles { get; }
+    string? Email { get; }
 
-        [CanBeNull]
-        Claim FindClaim(string claimType);
+    bool EmailVerified { get; }
 
-        [NotNull]
-        Claim[] FindClaims(string claimType);
+    Guid? TenantId { get; }
 
-        [NotNull]
-        Claim[] GetAllClaims();
+    [NotNull]
+    string[] Roles { get; }
 
-        bool IsInRole(string roleName);
-    }
+    Claim? FindClaim(string claimType);
+
+    [NotNull]
+    Claim[] FindClaims(string claimType);
+
+    [NotNull]
+    Claim[] GetAllClaims();
+
+    bool IsInRole(string roleName);
 }

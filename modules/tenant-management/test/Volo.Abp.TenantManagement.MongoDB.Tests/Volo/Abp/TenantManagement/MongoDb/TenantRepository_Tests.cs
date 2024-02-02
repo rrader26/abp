@@ -1,7 +1,9 @@
-﻿namespace Volo.Abp.TenantManagement.MongoDb
-{
-    public class TenantRepository_Tests : TenantRepository_Tests<AbpTenantManagementMongoDbTestModule>
-    {
+﻿using Xunit;
 
-    }
+namespace Volo.Abp.TenantManagement.MongoDB;
+
+[Collection(MongoTestCollection.Name)]
+public class TenantRepository_Tests : TenantRepository_Tests<AbpTenantManagementMongoDbTestModule>
+{
+
 }
